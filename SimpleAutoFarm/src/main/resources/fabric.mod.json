@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "simpleautofarm",
+	"version": "${version}",
+	"name": "Planter/Harvester Simple Auto Farm",
+	"description": "A simple automatic farming mod that contains only 2 additional blocks: A planter and a harvester.",
+	"authors": [
+		"Alex Kastanek"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/simpleautofarm/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.example.simpleautofarm.PlanterHarvesterSimpleAutoFarm"
+		],
+		"client": [
+			"com.example.simpleautofarm.client.PlanterHarvesterSimpleAutoFarmClient"
+		]
+	},
+	"mixins": [
+		"simpleautofarm.mixins.json",
+		{
+			"config": "simpleautofarm.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
