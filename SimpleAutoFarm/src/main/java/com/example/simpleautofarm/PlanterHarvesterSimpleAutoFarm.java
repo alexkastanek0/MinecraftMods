@@ -7,6 +7,8 @@ import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.example.simpleautofarm.registry.ModBlocks;
+
 public class PlanterHarvesterSimpleAutoFarm implements ModInitializer {
 	public static final String MOD_ID = "simpleautofarm";
 
@@ -21,7 +23,9 @@ public class PlanterHarvesterSimpleAutoFarm implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		LOGGER.info("Hello Fabric world!");
+		ModBlocks.initialize();
+
+        LOGGER.info("Planter/Harvester Simple Auto Farm initialized.");
 	}
 
 	public static Identifier id(String path) {
