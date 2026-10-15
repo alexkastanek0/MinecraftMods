@@ -24,7 +24,7 @@ public final class ModBlocks {
         blockItemId("planter"),
         MachineBlock::new,
         BlockBehaviour.Properties.of()
-            .strength(3.5F)
+            .strength(3.5F, 3.5F)
             .sound(SoundType.STONE)
     );
 
@@ -32,7 +32,7 @@ public final class ModBlocks {
         blockItemId("harvester"),
         MachineBlock::new,
         BlockBehaviour.Properties.of()
-            .strength(3.5F)
+            .strength(1.5F, 1.5F)
             .sound(SoundType.STONE)
     );
 

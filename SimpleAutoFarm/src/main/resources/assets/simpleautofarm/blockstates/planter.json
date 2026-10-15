@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "simpleautofarm:block/planter"
+    },
+    "facing=south": {
+      "model": "simpleautofarm:block/planter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "simpleautofarm:block/planter",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "simpleautofarm:block/planter",
+      "y": 90
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "simpleautofarm:block/harvester"
+    },
+    "facing=south": {
+      "model": "simpleautofarm:block/harvester",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "simpleautofarm:block/harvester",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "simpleautofarm:block/harvester",
+      "y": 90
+    }
+  }
+}
