@@ -1,0 +1,144 @@
+package com.example.simpleautofarm.blockentity;
+
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+
+public abstract class MachineInventoryBlockEntity extends BlockEntity implements Container {
+    public static final int INVENTORY_SIZE = 9;
+
+    protected NonNullList<ItemStack> items =
+        NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
+
+    protected MachineInventoryBlockEntity(
+        net.minecraft.world.level.block.entity.BlockEntityType<?> type,
+        net.minecraft.core.BlockPos pos,
+        BlockState state
+    ) {
+        super(type, pos, state);
+    }
+
+    protected abstract boolean isItemValid(ItemStack stack);
+
+    @Override
+    public int getContainerSize() {
+        return INVENTORY_SIZE;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        for (ItemStack stack : items) {
+            if (!stack.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        if (slot < 0 || slot >= items.size()) {
+            return ItemStack.EMPTY;
+        }
+        return items.get(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        if (slot < 0 || slot >= items.size() || amount <= 0) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack result = ContainerHelper.removeItem(items, slot, amount);
+
+        if (!result.isEmpty()) {
+            setChanged();
+        }
+
+        return result;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        if (slot < 0 || slot >= items.size()) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack result = items.get(slot);
+        items.set(slot, ItemStack.EMPTY);
+        return result;
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        if (slot < 0 || slot >= items.size()) {
+            return;
+        }
+
+        if (!stack.isEmpty() && !isItemValid(stack)) {
+            return;
+        }
+
+        if (!stack.isEmpty() && stack.getCount() > stack.getMaxStackSize()) {
+            stack = stack.copy();
+            stack.setCount(stack.getMaxStackSize());
+        }
+
+        items.set(slot, stack);
+        setChanged();
+    }
+
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        return slot >= 0
+            && slot < items.size()
+            && !stack.isEmpty()
+            && isItemValid(stack);
+    }
+
+    @Override
+    public void clearContent() {
+        items.clear();
+        for (int i = 0; i < INVENTORY_SIZE; i++) {
+            items.add(ItemStack.EMPTY);
+        }
+        setChanged();
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return Container.stillValidBlockEntity(this, player);
+    }
+
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+
+        items = NonNullList.withSize(INVENTORY_SIZE, ItemStack.EMPTY);
+        ContainerHelper.loadAllItems(input, items);
+
+        // Discard invalid entries from old or malformed save data.
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack stack = items.get(i);
+
+            if (!stack.isEmpty() && !isItemValid(stack)) {
+                items.set(i, ItemStack.EMPTY);
+            } else if (!stack.isEmpty()
+                    && stack.getCount() > stack.getMaxStackSize()) {
+                stack.setCount(stack.getMaxStackSize());
+            }
+        }
+    }
+
+    @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, items);
+    }
+}
