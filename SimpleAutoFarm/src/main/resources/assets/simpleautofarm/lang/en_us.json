@@ -1,4 +1,6 @@
 {
   "block.simpleautofarm.planter": "Planter",
-  "block.simpleautofarm.harvester": "Harvester"
+  "block.simpleautofarm.harvester": "Harvester",
+  "container.simpleautofarm.planter": "Planter",
+  "container.simpleautofarm.harvester": "Harvester"
 }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.example.simpleautofarm.registry.ModBlocks;
 import com.example.simpleautofarm.registry.ModBlockEntities;
+import com.example.simpleautofarm.registry.ModMenuTypes;
 
 public class PlanterHarvesterSimpleAutoFarm implements ModInitializer {
 	public static final String MOD_ID = "simpleautofarm";
@@ -26,6 +27,7 @@ public class PlanterHarvesterSimpleAutoFarm implements ModInitializer {
 
 		ModBlocks.initialize();
 		ModBlockEntities.initialize();
+		ModMenuTypes.initialize();
 
         LOGGER.info("Planter/Harvester Simple Auto Farm initialized.");
 	}

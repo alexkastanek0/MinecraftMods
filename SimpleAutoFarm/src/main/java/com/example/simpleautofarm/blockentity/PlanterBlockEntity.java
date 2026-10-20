@@ -1,16 +1,36 @@
 package com.example.simpleautofarm.blockentity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.network.chat.Component;
 
 import com.example.simpleautofarm.registry.ModBlockEntities;
+
+import com.example.simpleautofarm.menu.PlanterMenu;
 
 public class PlanterBlockEntity extends MachineInventoryBlockEntity {
     public PlanterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.PLANTER, pos, state);
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("container.simpleautofarm.planter");
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(
+        int containerId,
+        Inventory inventory,
+        Player player
+    ) {
+        return new PlanterMenu(containerId, inventory, this);
     }
 
     @Override

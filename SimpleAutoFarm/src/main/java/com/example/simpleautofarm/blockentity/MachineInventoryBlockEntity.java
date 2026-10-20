@@ -13,8 +13,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.MenuProvider;
 
-public abstract class MachineInventoryBlockEntity extends BlockEntity implements WorldlyContainer {
+public abstract class MachineInventoryBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
     public static final int INVENTORY_SIZE = 9;
 
     protected NonNullList<ItemStack> items =
