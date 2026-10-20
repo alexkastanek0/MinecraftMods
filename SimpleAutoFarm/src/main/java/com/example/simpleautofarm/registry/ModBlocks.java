@@ -3,7 +3,8 @@ package com.example.simpleautofarm.registry;
 import java.util.function.Function;
 
 import com.example.simpleautofarm.PlanterHarvesterSimpleAutoFarm;
-import com.example.simpleautofarm.block.MachineBlock;
+import com.example.simpleautofarm.block.PlanterBlock;
+import com.example.simpleautofarm.block.HarvesterBlock;
 
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 
@@ -22,7 +23,7 @@ public final class ModBlocks {
 
     public static final Block PLANTER = register(
         blockItemId("planter"),
-        MachineBlock::new,
+        PlanterBlock::new,
         BlockBehaviour.Properties.of()
             .strength(3.5F, 3.5F)
             .sound(SoundType.STONE)
@@ -30,7 +31,7 @@ public final class ModBlocks {
 
     public static final Block HARVESTER = register(
         blockItemId("harvester"),
-        MachineBlock::new,
+        HarvesterBlock::new,
         BlockBehaviour.Properties.of()
             .strength(1.5F, 1.5F)
             .sound(SoundType.STONE)

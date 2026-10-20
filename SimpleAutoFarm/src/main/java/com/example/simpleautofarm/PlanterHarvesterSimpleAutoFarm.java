@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.example.simpleautofarm.registry.ModBlocks;
+import com.example.simpleautofarm.registry.ModBlockEntities;
 
 public class PlanterHarvesterSimpleAutoFarm implements ModInitializer {
 	public static final String MOD_ID = "simpleautofarm";
@@ -24,6 +25,7 @@ public class PlanterHarvesterSimpleAutoFarm implements ModInitializer {
 		// Proceed with mild caution.
 
 		ModBlocks.initialize();
+		ModBlockEntities.initialize();
 
         LOGGER.info("Planter/Harvester Simple Auto Farm initialized.");
 	}
