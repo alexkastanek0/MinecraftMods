@@ -1,6 +1,8 @@
 package com.example.simpleautofarm.blockentity;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.WorldlyContainer;
+import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.player.Player;
@@ -10,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
-public abstract class MachineInventoryBlockEntity extends BlockEntity implements Container {
+public abstract class MachineInventoryBlockEntity extends BlockEntity implements WorldlyContainer {
     public static final int INVENTORY_SIZE = 9;
 
     protected NonNullList<ItemStack> items =
@@ -25,6 +27,9 @@ public abstract class MachineInventoryBlockEntity extends BlockEntity implements
     }
 
     protected abstract boolean isItemValid(ItemStack stack);
+
+    protected abstract boolean canAcceptFromSide(Direction side);
+    protected abstract boolean canExtractFromSide(Direction side);
 
     @Override
     public int getContainerSize() {
@@ -140,5 +145,41 @@ public abstract class MachineInventoryBlockEntity extends BlockEntity implements
     protected void saveAdditional(ValueOutput output) {
         super.saveAdditional(output);
         ContainerHelper.saveAllItems(output, items);
+    }
+
+    @Override
+    public int[] getSlotsForFace(Direction side) {
+        if (!canAcceptFromSide(side) && !canExtractFromSide(side)) {
+            return new int[0];
+        }
+
+        int[] slots = new int[getContainerSize()];
+
+        for (int i = 0; i < slots.length; i++) {
+            slots[i] = i;
+        }
+
+        return slots;
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(
+        int slot,
+        ItemStack stack,
+        Direction side
+    ) {
+        return canAcceptFromSide(side) && canPlaceItem(slot, stack);
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(
+        int slot,
+        ItemStack stack,
+        Direction side
+    ) {
+        return slot >= 0
+            && slot < getContainerSize()
+            && canExtractFromSide(side)
+            && !stack.isEmpty();
     }
 }
