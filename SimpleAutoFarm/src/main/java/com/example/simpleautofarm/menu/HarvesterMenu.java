@@ -4,8 +4,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
+import com.example.simpleautofarm.farming.CropType;
 import com.example.simpleautofarm.registry.ModMenuTypes;
 
 public class HarvesterMenu extends MachineMenu {
@@ -28,11 +28,6 @@ public class HarvesterMenu extends MachineMenu {
     }
 
     private static boolean isValidHarvestItem(ItemStack stack) {
-        return stack.is(Items.WHEAT)
-            || stack.is(Items.WHEAT_SEEDS)
-            || stack.is(Items.CARROT)
-            || stack.is(Items.POTATO)
-            || stack.is(Items.BEETROOT)
-            || stack.is(Items.BEETROOT_SEEDS);
+        return CropType.isValidHarvestedItem(stack);
     }
 }
