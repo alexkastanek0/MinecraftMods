@@ -3,6 +3,7 @@ package com.example.simpleautofarm.blockentity;
 import java.util.List;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Container;
 import net.minecraft.world.WorldlyContainer;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.MenuProvider;
@@ -155,6 +157,17 @@ public abstract class MachineInventoryBlockEntity extends BlockEntity implements
             && !stack.isEmpty();
     }
 
+    /**
+     * Returns the crop position directly in front of the harvester.
+     */
+    public BlockPos getTargetCropPos() {
+        Direction facing = getBlockState().getValue(
+            BlockStateProperties.HORIZONTAL_FACING
+        );
+
+        return getBlockPos().relative(facing);
+    }
+
     @Override
     public boolean stillValid(Player player) {
         return Container.stillValidBlockEntity(this, player);
@@ -186,7 +199,30 @@ public abstract class MachineInventoryBlockEntity extends BlockEntity implements
         ContainerHelper.saveAllItems(output, items);
     }
 
+    /**
+     * Inserts an entire batch, or makes no changes if it cannot fit.
+     */
+    protected final boolean insertAll(List<ItemStack> incomingStacks) {
+        ItemStack[] simulatedInventory = simulateInsertion(incomingStacks);
+
+        if (simulatedInventory == null) {
+            return false;
+        }
+
+        // Commit only after the complete simulation succeeds.
+        for (int i = 0; i < simulatedInventory.length; i++) {
+            items.set(i, simulatedInventory[i]);
+        }
+
+        setChanged();
+        return true;
+    }
+
     protected final boolean canFitAll(List<ItemStack> incomingStacks) {
+        return simulateInsertion(incomingStacks) != null;
+    }
+
+    private ItemStack[] simulateInsertion(List<ItemStack> incomingStacks) {
         ItemStack[] simulatedInventory = new ItemStack[getContainerSize()];
 
         // Copy the currentStack inventory so the check changes nothing.
@@ -201,18 +237,16 @@ public abstract class MachineInventoryBlockEntity extends BlockEntity implements
             }
 
             if (!isItemValid(incomingStack)) {
-                return false;
+                return null;
             }
 
             ItemStack remainingIncomingStack = incomingStack.copy();
 
             // First, fill compatible existing stacks.
-            for (int i = 0; i < simulatedInventory.length; i++) {
-                ItemStack currentStack = simulatedInventory[i];
-
+            for (ItemStack currentStack : simulatedInventory) {
                 if (currentStack.isEmpty()
                         || !ItemStack.isSameItemSameComponents(
-                                currentStack, remainingIncomingStack)) {
+                            currentStack, remainingIncomingStack)) {
                     continue;
                 }
 
@@ -235,7 +269,7 @@ public abstract class MachineInventoryBlockEntity extends BlockEntity implements
                 }
             }
 
-            // Then, use empty slots.
+            // Then, place the remainder into empty slots.
             for (int i = 0;
                     i < simulatedInventory.length && !remainingIncomingStack.isEmpty();
                     i++) {
@@ -256,10 +290,10 @@ public abstract class MachineInventoryBlockEntity extends BlockEntity implements
 
             // Any remainder means the complete batch won't fit.
             if (!remainingIncomingStack.isEmpty()) {
-                return false;
+                return null;
             }
         }
 
-        return true;
+        return simulatedInventory;
     }
 }

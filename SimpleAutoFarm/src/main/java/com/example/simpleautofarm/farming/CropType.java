@@ -5,6 +5,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 
@@ -26,7 +28,7 @@ public enum CropType {
     POTATOES(
         Items.POTATO,
         List.of(
-            Items.POTATO
+            Items.POTATO, Items.POISONOUS_POTATO
         ),
         Blocks.POTATOES
     ),
@@ -58,6 +60,15 @@ public enum CropType {
 
     public Block getCropBlock() {
         return cropBlock;
+    }
+
+    /**
+     * Returns whether this crop state is fully mature.
+     */
+    public boolean isMature(BlockState state) {
+        return state.is(cropBlock)
+            && state.getBlock() instanceof CropBlock crop
+            && crop.isMaxAge(state);
     }
 
     public boolean matchesPlantingItem(ItemStack stack) {

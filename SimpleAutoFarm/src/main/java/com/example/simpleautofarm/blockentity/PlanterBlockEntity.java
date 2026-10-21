@@ -6,13 +6,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.network.chat.Component;
 
 import com.example.simpleautofarm.registry.ModBlockEntities;
+import com.example.simpleautofarm.PlanterHarvesterSimpleAutoFarm;
 import com.example.simpleautofarm.farming.CropType;
 import com.example.simpleautofarm.menu.PlanterMenu;
 
@@ -33,17 +33,6 @@ public class PlanterBlockEntity extends MachineInventoryBlockEntity {
         Player player
     ) {
         return new PlanterMenu(containerId, inventory, this);
-    }
-
-    /**
-     * Returns the crop position directly in front of the planter.
-     */
-    public BlockPos getTargetCropPos() {
-        Direction facing = getBlockState().getValue(
-            BlockStateProperties.HORIZONTAL_FACING
-        );
-
-        return getBlockPos().relative(facing);
     }
 
     /**
@@ -80,57 +69,67 @@ public class PlanterBlockEntity extends MachineInventoryBlockEntity {
      * @return true if a crop was successfully planted
      */
     public boolean tryPlant() {
-        // World changes and inventory mutations must happen on the server.
-        Level level = getLevel();
+        try {
+            // World changes and inventory mutations must happen on the server.
+            Level level = getLevel();
 
-        if (level == null || level.isClientSide()) {
-            return false;
-        }
-
-        // Check the target before examining or consuming seeds.
-        if (!hasValidPlantingTarget()) {
-            return false;
-        }
-
-        // Find the first valid planting item in the inventory.
-        for (int slot = 0; slot < getContainerSize(); slot++) {
-            ItemStack seedStack = getItem(slot);
-
-            CropType crop = CropType.fromPlantingItem(seedStack);
-
-            if (crop == null) {
-                continue;
-            }
-
-            BlockPos cropPos = getTargetCropPos();
-
-            // Obtain the default state of the corresponding vanilla crop.
-            BlockState cropState = crop.getCropBlock().defaultBlockState();
-
-            // Respect the crop's native survival requirements.
-            if (!cropState.canSurvive(level, cropPos)) {
+            if (level == null || level.isClientSide()) {
                 return false;
             }
 
-            // Attempt to place the crop in the world.
-            if (!level.setBlock(cropPos, cropState, 3)) {
+            // Check the target before examining or consuming seeds.
+            if (!hasValidPlantingTarget()) {
                 return false;
             }
 
-            // Consume exactly one planting item, but only after placement.
-            seedStack.shrink(1);
+            // Find the first valid planting item in the inventory.
+            for (int slot = 0; slot < getContainerSize(); slot++) {
+                ItemStack seedStack = getItem(slot);
 
-            if (seedStack.isEmpty()) {
-                items.set(slot, ItemStack.EMPTY);
+                CropType crop = CropType.fromPlantingItem(seedStack);
+
+                if (crop == null) {
+                    continue;
+                }
+
+                BlockPos cropPos = getTargetCropPos();
+
+                // Obtain the default state of the corresponding vanilla crop.
+                BlockState cropState = crop.getCropBlock().defaultBlockState();
+
+                // Respect the crop's native survival requirements.
+                if (!cropState.canSurvive(level, cropPos)) {
+                    return false;
+                }
+
+                // Attempt to place the crop in the world.
+                if (!level.setBlock(cropPos, cropState, 3)) {
+                    return false;
+                }
+
+                // Consume exactly one planting item, but only after placement.
+                seedStack.shrink(1);
+
+                if (seedStack.isEmpty()) {
+                    items.set(slot, ItemStack.EMPTY);
+                }
+
+                setChanged();
+
+                return true;
             }
 
-            setChanged();
+            // No valid planting items were available.
+            return false;
+        } catch (Exception exception) {
+            PlanterHarvesterSimpleAutoFarm.LOGGER.error(
+                "Unexpected error while planting crop at {}",
+                getBlockPos(),
+                exception
+            );
 
-            return true;
+            throw exception;
         }
-
-        // No valid planting items were available.
-        return false;
     }
 
     @Override
