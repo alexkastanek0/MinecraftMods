@@ -74,6 +74,65 @@ public class PlanterBlockEntity extends MachineInventoryBlockEntity {
         return isCropSpaceEmpty && isFarmland;
     }
 
+    /**
+     * Attempts to plant one crop directly in front of the planter.
+     *
+     * @return true if a crop was successfully planted
+     */
+    public boolean tryPlant() {
+        // World changes and inventory mutations must happen on the server.
+        Level level = getLevel();
+
+        if (level == null || level.isClientSide()) {
+            return false;
+        }
+
+        // Check the target before examining or consuming seeds.
+        if (!hasValidPlantingTarget()) {
+            return false;
+        }
+
+        // Find the first valid planting item in the inventory.
+        for (int slot = 0; slot < getContainerSize(); slot++) {
+            ItemStack seedStack = getItem(slot);
+
+            CropType crop = CropType.fromPlantingItem(seedStack);
+
+            if (crop == null) {
+                continue;
+            }
+
+            BlockPos cropPos = getTargetCropPos();
+
+            // Obtain the default state of the corresponding vanilla crop.
+            BlockState cropState = crop.getCropBlock().defaultBlockState();
+
+            // Respect the crop's native survival requirements.
+            if (!cropState.canSurvive(level, cropPos)) {
+                return false;
+            }
+
+            // Attempt to place the crop in the world.
+            if (!level.setBlock(cropPos, cropState, 3)) {
+                return false;
+            }
+
+            // Consume exactly one planting item, but only after placement.
+            seedStack.shrink(1);
+
+            if (seedStack.isEmpty()) {
+                items.set(slot, ItemStack.EMPTY);
+            }
+
+            setChanged();
+
+            return true;
+        }
+
+        // No valid planting items were available.
+        return false;
+    }
+
     @Override
     protected boolean isItemValid(ItemStack stack) {
         return CropType.isValidPlantingItem(stack);
