@@ -1,17 +1,32 @@
 {
   "variants": {
-    "facing=north": {
+    "facing=north,powered=false": {
       "model": "simpleautofarm:block/planter"
     },
-    "facing=south": {
+    "facing=north,powered=true": {
+      "model": "simpleautofarm:block/planter"
+    },
+    "facing=south,powered=false": {
       "model": "simpleautofarm:block/planter",
       "y": 180
     },
-    "facing=west": {
+    "facing=south,powered=true": {
+      "model": "simpleautofarm:block/planter",
+      "y": 180
+    },
+    "facing=west,powered=false": {
       "model": "simpleautofarm:block/planter",
       "y": 270
     },
-    "facing=east": {
+    "facing=west,powered=true": {
+      "model": "simpleautofarm:block/planter",
+      "y": 270
+    },
+    "facing=east,powered=false": {
+      "model": "simpleautofarm:block/planter",
+      "y": 90
+    },
+    "facing=east,powered=true": {
       "model": "simpleautofarm:block/planter",
       "y": 90
     }

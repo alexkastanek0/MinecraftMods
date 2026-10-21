@@ -1,6 +1,7 @@
 package com.example.simpleautofarm.block;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,5 +16,13 @@ public class PlanterBlock extends MachineBlock implements EntityBlock {
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new PlanterBlockEntity(pos, state);
+    }
+
+    @Override
+    protected void onRedstonePulse(Level level, BlockPos pos) {
+        if (level.getBlockEntity(pos)
+                instanceof PlanterBlockEntity planter) {
+            planter.tryPlant();
+        }
     }
 }

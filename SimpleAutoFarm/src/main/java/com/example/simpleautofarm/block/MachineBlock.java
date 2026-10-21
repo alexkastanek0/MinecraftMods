@@ -15,16 +15,19 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.redstone.Orientation;
 
 public class MachineBlock extends Block {
 
     public MachineBlock(BlockBehaviour.Properties properties) {
         super(properties);
         registerDefaultState(
-            stateDefinition.any().setValue(
-                BlockStateProperties.HORIZONTAL_FACING,
-                Direction.NORTH
-            )
+            stateDefinition.any()
+                .setValue(
+                    BlockStateProperties.HORIZONTAL_FACING,
+                    Direction.NORTH
+                )
+                .setValue(BlockStateProperties.POWERED, false)
         );
     }
 
@@ -32,14 +35,23 @@ public class MachineBlock extends Block {
     protected void createBlockStateDefinition(
         StateDefinition.Builder<Block, BlockState> builder
     ) {
-        builder.add(BlockStateProperties.HORIZONTAL_FACING);
+        builder.add(
+            BlockStateProperties.HORIZONTAL_FACING,
+            BlockStateProperties.POWERED
+        );
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(
-            BlockStateProperties.HORIZONTAL_FACING,
-            context.getHorizontalDirection().getOpposite()
+        return defaultBlockState()
+            .setValue(
+                BlockStateProperties.HORIZONTAL_FACING,
+                context.getHorizontalDirection().getOpposite()
+            )
+            .setValue(
+                BlockStateProperties.POWERED,
+                context.getLevel().hasNeighborSignal(context.getClickedPos()
+            )
         );
     }
 
@@ -58,6 +70,56 @@ public class MachineBlock extends Block {
         return state.rotate(mirror.getRotation(
             state.getValue(BlockStateProperties.HORIZONTAL_FACING)
         ));
+    }
+
+    /**
+     * Detects changes in redstone power.
+     * Subclasses implement the actual machine operation.
+     */
+    @Override
+    protected void neighborChanged(
+        BlockState state,
+        Level level,
+        BlockPos pos,
+        Block neighborBlock,
+        Orientation orientation,
+        boolean movedByPiston
+    ) {
+        super.neighborChanged(
+            state, level, pos, neighborBlock, orientation, movedByPiston
+        );
+
+        if (level.isClientSide()) {
+            return;
+        }
+
+        boolean poweredNow = level.hasNeighborSignal(pos);
+        boolean poweredBefore = state.getValue(
+            BlockStateProperties.POWERED
+        );
+
+        if (poweredNow == poweredBefore) {
+            return;
+        }
+
+        BlockState updatedState = state.setValue(
+            BlockStateProperties.POWERED,
+            poweredNow
+        );
+
+        level.setBlock(pos, updatedState, Block.UPDATE_ALL);
+
+        // Only the off-to-on transition triggers an operation.
+        if (poweredNow && !poweredBefore) {
+            onRedstonePulse(level, pos);
+        }
+    }
+
+    /**
+     * Called once when this machine receives a rising redstone edge.
+     */
+    protected void onRedstonePulse(Level level, BlockPos pos) {
+        // Intentionally empty; subclasses supply their own behavior.
     }
 
     @Override
