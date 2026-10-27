@@ -1,0 +1,20 @@
+
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TWT",
+    "#I#",
+    "#R#"
+  ],
+  "key": {
+    "T": "#minecraft:planks",
+    "W": "minecraft:wheat",
+    "#": "minecraft:cobblestone",
+    "I": "minecraft:iron_ingot",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "simpleautofarm:harvester",
+    "count": 1
+  }
+}

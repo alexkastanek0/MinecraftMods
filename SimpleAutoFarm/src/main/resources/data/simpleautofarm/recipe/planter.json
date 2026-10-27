@@ -1,0 +1,19 @@
+
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#S#",
+    "#B#",
+    "#R#"
+  ],
+  "key": {
+    "#": "minecraft:cobblestone",
+    "S": "minecraft:wheat_seeds",
+    "B": "minecraft:bow",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "simpleautofarm:planter",
+    "count": 1
+  }
+}
