@@ -13,6 +13,7 @@ import com.example.simpleautofarm.registry.ModMenuTypes;
 import com.example.simpleautofarm.command.PlanterTestCommands;
 
 import com.example.simpleautofarm.network.HarvesterAnimationPayload;
+import com.example.simpleautofarm.network.PlanterSoundPayload;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
 
@@ -33,6 +34,10 @@ public class PlanterHarvesterSimpleAutoFarm implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(
 			HarvesterAnimationPayload.TYPE,
 			HarvesterAnimationPayload.CODEC
+		);
+		PayloadTypeRegistry.clientboundPlay().register(
+			PlanterSoundPayload.TYPE,
+			PlanterSoundPayload.CODEC
 		);
 
 		ModBlocks.initialize();

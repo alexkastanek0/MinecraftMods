@@ -10,11 +10,13 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 
 import com.example.simpleautofarm.registry.ModBlockEntities;
 import com.example.simpleautofarm.PlanterHarvesterSimpleAutoFarm;
 import com.example.simpleautofarm.farming.CropType;
 import com.example.simpleautofarm.menu.PlanterMenu;
+import com.example.simpleautofarm.network.PlanterSoundNetworking;
 
 public class PlanterBlockEntity extends MachineInventoryBlockEntity {
     public PlanterBlockEntity(BlockPos pos, BlockState state) {
@@ -73,7 +75,7 @@ public class PlanterBlockEntity extends MachineInventoryBlockEntity {
             // World changes and inventory mutations must happen on the server.
             Level level = getLevel();
 
-            if (level == null || level.isClientSide()) {
+            if (!(level instanceof ServerLevel serverLevel)) {
                 return false;
             }
 
@@ -115,6 +117,9 @@ public class PlanterBlockEntity extends MachineInventoryBlockEntity {
                 }
 
                 setChanged();
+
+                // Notify nearby clients that a crop was successfully planted.
+                PlanterSoundNetworking.sendSound(serverLevel, getBlockPos());
 
                 return true;
             }

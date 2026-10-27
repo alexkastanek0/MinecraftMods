@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.example.simpleautofarm.network.HarvesterAnimationPayload;
+import com.example.simpleautofarm.network.PlanterSoundPayload;
 import com.example.simpleautofarm.registry.ModBlockEntities;
 import com.example.simpleautofarm.registry.ModMenuTypes;
 import com.example.simpleautofarm.client.render.HarvesterBlockEntityRenderer;
@@ -57,6 +58,22 @@ public class PlanterHarvesterSimpleAutoFarmClient implements ClientModInitialize
                         SoundSource.BLOCKS,
                         0.5F,
                         0.7F,
+                        false
+                    );
+                }
+            })
+        );
+
+        ClientPlayNetworking.registerGlobalReceiver(
+            PlanterSoundPayload.TYPE,
+            (payload, context) -> context.client().execute(() -> {
+                if (context.client().level != null) {
+                    context.client().level.playLocalSound(
+                        payload.pos(),
+                        SoundEvents.DISPENSER_DISPENSE,
+                        SoundSource.BLOCKS,
+                        1.0F,
+                        1.0F,
                         false
                     );
                 }

@@ -116,6 +116,7 @@ public class HarvesterBlockEntity extends MachineInventoryBlockEntity {
                 return false;
             }
 
+            // Notify nearby clients that a crop was successfully harvested.
             HarvesterAnimationNetworking.sendAnimation(
                 serverLevel,
                 getBlockPos()
