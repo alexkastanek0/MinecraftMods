@@ -17,6 +17,7 @@ import com.example.simpleautofarm.PlanterHarvesterSimpleAutoFarm;
 import com.example.simpleautofarm.registry.ModBlockEntities;
 import com.example.simpleautofarm.farming.CropType;
 import com.example.simpleautofarm.menu.HarvesterMenu;
+import com.example.simpleautofarm.network.HarvesterAnimationNetworking;
 
 import java.util.List;
 
@@ -114,6 +115,11 @@ public class HarvesterBlockEntity extends MachineInventoryBlockEntity {
                 serverLevel.setBlock(cropPos, cropState, 3);
                 return false;
             }
+
+            HarvesterAnimationNetworking.sendAnimation(
+                serverLevel,
+                getBlockPos()
+            );
 
             return true;
         } catch (Exception exception) {

@@ -12,6 +12,9 @@ import com.example.simpleautofarm.registry.ModBlockEntities;
 import com.example.simpleautofarm.registry.ModMenuTypes;
 import com.example.simpleautofarm.command.PlanterTestCommands;
 
+import com.example.simpleautofarm.network.HarvesterAnimationPayload;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+
 
 public class PlanterHarvesterSimpleAutoFarm implements ModInitializer {
 	public static final String MOD_ID = "simpleautofarm";
@@ -26,6 +29,11 @@ public class PlanterHarvesterSimpleAutoFarm implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
+
+		PayloadTypeRegistry.clientboundPlay().register(
+			HarvesterAnimationPayload.TYPE,
+			HarvesterAnimationPayload.CODEC
+		);
 
 		ModBlocks.initialize();
 		ModBlockEntities.initialize();
